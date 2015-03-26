@@ -30,11 +30,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 /**
- * @author Tonic Artos
  * @param <T>
+ * @author Tonic Artos
  */
-public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implements
-        StickyGridHeadersSimpleAdapter {
+public class StickyGridHeadersSimpleArrayAdapter<T, K extends TextView> extends BaseAdapter implements StickyGridHeadersSimpleAdapter {
     protected static final String TAG = StickyGridHeadersSimpleArrayAdapter.class.getSimpleName();
 
     private int mHeaderResId;
@@ -44,16 +43,27 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
     private int mItemResId;
 
     private List<T> mItems;
+    private Class<K> typeParamerClass;
 
-    public StickyGridHeadersSimpleArrayAdapter(Context context, List<T> items, int headerResId,
-            int itemResId) {
+    public StickyGridHeadersSimpleArrayAdapter(Context context, List<T> items, int headerResId, int itemResId) {
+        typeParamerClass = (Class<K>) TextView.class;
         init(context, items, headerResId, itemResId);
+
     }
 
-    public StickyGridHeadersSimpleArrayAdapter(Context context, T[] items, int headerResId,
-            int itemResId) {
-        init(context, Arrays.asList(items), headerResId, itemResId);
+    public StickyGridHeadersSimpleArrayAdapter(Context context, List<T> items, int headerResId, int itemResId, Class customtextview) {
+        typeParamerClass = customtextview;
+        init(context, items, headerResId, itemResId);
+
     }
+
+    public StickyGridHeadersSimpleArrayAdapter(Context context, T[] items, int headerResId, int itemResId, Class customtextview) {
+        typeParamerClass = customtextview;
+        init(context, Arrays.asList(items), headerResId, itemResId);
+
+
+    }
+
 
     @Override
     public boolean areAllItemsEnabled() {
@@ -70,7 +80,7 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
         T item = getItem(position);
         CharSequence value;
         if (item instanceof CharSequence) {
-            value = (CharSequence)item;
+            value = (CharSequence) item;
         } else {
             value = item.toString();
         }
@@ -85,16 +95,16 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
         if (convertView == null) {
             convertView = mInflater.inflate(mHeaderResId, parent, false);
             holder = new HeaderViewHolder();
-            holder.textView = (TextView)convertView.findViewById(android.R.id.text1);
+            holder.textView = (K) convertView.findViewById(android.R.id.text1);
             convertView.setTag(holder);
         } else {
-            holder = (HeaderViewHolder)convertView.getTag();
+            holder = (HeaderViewHolder) convertView.getTag();
         }
 
         T item = getItem(position);
         CharSequence string;
         if (item instanceof CharSequence) {
-            string = (CharSequence)item;
+            string = (CharSequence) item;
         } else {
             string = item.toString();
         }
@@ -122,15 +132,15 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
         if (convertView == null) {
             convertView = mInflater.inflate(mItemResId, parent, false);
             holder = new ViewHolder();
-            holder.textView = (TextView)convertView.findViewById(android.R.id.text1);
+            holder.textView = (K) convertView.findViewById(android.R.id.text1);
             convertView.setTag(holder);
         } else {
-            holder = (ViewHolder)convertView.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
         T item = getItem(position);
         if (item instanceof CharSequence) {
-            holder.textView.setText((CharSequence)item);
+            holder.textView.setText((CharSequence) item);
         } else {
             holder.textView.setText(item.toString());
         }
@@ -145,11 +155,11 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
         mInflater = LayoutInflater.from(context);
     }
 
-    protected class HeaderViewHolder {
-        public TextView textView;
+    protected class HeaderViewHolder<K extends TextView> {
+        public K textView;
     }
 
-    protected class ViewHolder {
-        public TextView textView;
+    protected class ViewHolder<K extends TextView> {
+        public K textView;
     }
 }
